@@ -3,9 +3,10 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import { TypeOrmModule, getRepositoryToken } from '@nestjs/typeorm';
 import * as request from 'supertest';
-import { UsersModule } from '../src/users/users.module';
-import { User } from '../src/users/entity/user.entity';
+import { UsersModule } from '../../src/users/users.module';
+import { User } from '../../src/users/entity/user.entity';
 import { Repository } from 'typeorm/repository/Repository';
+import { AppModule } from '../../src/app.module';
 
 jest.setTimeout(30000);
 
@@ -23,7 +24,7 @@ describe('UserController (e2e)', () => {
       imports: [
         UsersModule,
         TypeOrmModule.forRoot({
-          ...require('../src/config/ormconfig.test'),
+          ...require('../../src/config/ormconfig.test'),
           entities: [User],
         }),
       ],
@@ -64,11 +65,12 @@ describe('UserController (e2e)', () => {
       expect(createdUser).toHaveProperty('id');
       expect(createdUser.fullName).toBe(newUser.fullName);
       expect(createdUser.isActive).toBe(true);
-    });
-    it('get user detail', async () => {
-        const response= await request(app.getHttpServer()).get('/users/1')
+
+        const response1= await request(app.getHttpServer()).get(`/users/${createdUser.id}`)
         console.log(response.body)
-      expect(response.statusCode).toBe(200);
-  });
+      expect(response1.statusCode).toBe(200);
+ 
+    });
+
 })
 });

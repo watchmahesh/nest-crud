@@ -1,7 +1,9 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable prettier/prettier */
-import { Controller, Post, Body, Get, Put, Delete,Param} from '@nestjs/common';
+import { Controller, Post, Body, Get,Param} from '@nestjs/common';
 import { UsersService } from './users.service';
 import { User } from './entity/user.entity';
+import { createDto } from './dto/user.dto';
 
 @Controller('users')
 export class UsersController {
@@ -19,7 +21,7 @@ export class UsersController {
     }
 
     @Post()
-    create(@Body() user: User) {
-        return this.service.create(user);
+    create(@Body() dto: createDto) {
+        return this.service.create(dto);
     }
 }

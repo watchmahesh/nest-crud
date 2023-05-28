@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import helmet from 'helmet';
@@ -9,7 +10,8 @@ async function bootstrap() {
   app.use(helmet());
 
   // Validation
-  app.useGlobalPipes(new ValidationPipe({ disableErrorMessages: true }));
+  app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
+
   // app.setGlobalPrefix('api');
 
   // OpenAPI Specification
