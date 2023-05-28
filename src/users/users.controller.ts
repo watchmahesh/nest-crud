@@ -4,12 +4,12 @@ import { Controller, Post, Body, Get,Param, Res, Query} from '@nestjs/common';
 import { UsersService } from './users.service';
 import { User } from './entity/user.entity';
 import { createDto } from './dto/user.dto';
-import { AbstractController } from '../../src/common/common.controller';
+import { AbstractController } from '../common/common.controller';
 import { Response } from "express";
 import { ApiQuery } from '@nestjs/swagger';
 import { ListUserDto } from './dto/listUser.dto';
-import { QueryUtils } from '../../src/utils/query.utils';
-import { QueryResponse } from '../../src/interface/request-response.interface';
+import { QueryUtils } from '../utils/query.utils';
+import { QueryResponse } from '../interface/request-response.interface';
 
 @Controller('users')
 export class UsersController extends AbstractController {
