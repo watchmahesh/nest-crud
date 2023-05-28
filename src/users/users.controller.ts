@@ -1,18 +1,47 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable prettier/prettier */
-import { Controller, Post, Body, Get,Param} from '@nestjs/common';
+import { Controller, Post, Body, Get,Param, Res, Query} from '@nestjs/common';
 import { UsersService } from './users.service';
 import { User } from './entity/user.entity';
 import { createDto } from './dto/user.dto';
+import { AbstractController } from '../../src/common/common.controller';
+import { Response } from "express";
+import { ApiQuery } from '@nestjs/swagger';
+import { ListUserDto } from './dto/listUser.dto';
+import { QueryUtils } from '../../src/utils/query.utils';
+import { QueryResponse } from '../../src/interface/request-response.interface';
 
 @Controller('users')
-export class UsersController {
+export class UsersController extends AbstractController {
 
-    constructor(private service: UsersService) { }
+    constructor(private service: UsersService,
+        private readonly queryUtils: QueryUtils
+        )
+     {
+        super();
+    }
 
     @Get()
-    getUser() {
-        return this.service.getUser();
+    @ApiQuery({ name: 'page', required: false, type: Number })
+    @ApiQuery({ name: 'limit', required: false, type: Number })
+     async getUser(@Query() query:ListUserDto,@Res() res : Response) {
+        const args = {
+            ...(await this.queryUtils.getQueryParams(query)),
+          };
+        const data= await this.service.getUser({
+            attributes: {
+                ...args,
+              },
+        });
+        const response: QueryResponse = {
+            totalRecords: data.count,
+            totalPages: Math.ceil(data.count / args.limit),
+            page: args.page,
+            limit: args.limit,
+            data: data.data,
+          };
+        this.successResponse(res,'User account details fetched successfully.',response)
+
     }
 
     @Get(':id')

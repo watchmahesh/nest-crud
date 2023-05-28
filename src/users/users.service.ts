@@ -5,8 +5,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './entity/user.entity';
 import { UserFetchFailedException } from './exception/userfetchfailed.exception';
-// import { CustomException } from '../../src/exception/custom.exception';
-import { UserInterface } from './interface/user.interface';
+import { CustomException } from '../exception/custom.exception';
+import { UserInterface, UserListRequest } from './interface/user.interface';
 
 @Injectable()
 export class UsersService {
@@ -17,9 +17,13 @@ export class UsersService {
         return await this.usersRepository.find();
     }
 
-    async getUser(): Promise<User[]> {
+    async getUser(query?: UserListRequest) {
         try {
-            return await this.usersRepository.find();
+            const [result, count] = await this.usersRepository.findAndCount({
+                skip: query.attributes.offset ? query.attributes.offset : 0,
+                take: query.attributes.limit ? query.attributes.limit : 25,
+              });
+              return { data: result, count };
         } catch (e) {
             throw new UserFetchFailedException(e);
             }
@@ -29,7 +33,6 @@ export class UsersService {
         try {
             const userData = await this.usersRepository.findOneBy({ "id": _id })
             if(!userData){
-                // throw new UserFetchFailedException('user not found');
 
                 throw new UserFetchFailedException('user not found')
             }
@@ -48,7 +51,8 @@ export class UsersService {
         );
     } catch (e) {
 
-        throw new UserFetchFailedException(e);
+        throw new CustomException('failed data to create',404);
+        // throw new UserFetchFailedException(e);
 
     }
     }
@@ -60,4 +64,6 @@ export class UsersService {
     async deleteUser(user: User) {
         this.usersRepository.delete(user);
     }
+
+   
 }
